@@ -17,7 +17,7 @@ from typing import Any
 
 import requests
 
-logger = logging.getLogger(__name__)
+logger = logging.getLogger("molmospaces_resources")
 
 
 class RemoteStorage(ABC):
@@ -124,8 +124,7 @@ class HFRemoteStorage(RemoteStorage):
 
     def _file_url(self, path_in_repo: str) -> str:
         return (
-            f"https://huggingface.co/datasets/{self.repo_id}"
-            f"/resolve/{self.revision}/{path_in_repo}"
+            f"https://huggingface.co/datasets/{self.repo_id}/resolve/{self.revision}/{path_in_repo}"
         )
 
     def _load_index(self, relative_path: Path) -> dict[str, Any]:
@@ -141,9 +140,7 @@ class HFRemoteStorage(RemoteStorage):
         key = relative_path.as_posix()
         if key not in self._index_cache:
             config = self._config_name(relative_path)
-            logger.debug(
-                "Loading HF shard index: repo=%s config=%s", self.repo_id, config
-            )
+            logger.debug("Loading HF shard index: repo=%s config=%s", self.repo_id, config)
             ds = load_dataset(
                 self.repo_id,
                 name=config,

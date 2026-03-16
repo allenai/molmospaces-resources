@@ -16,7 +16,7 @@ from molmospaces_resources.constants import TQDM_DISABLE_THRES
 if TYPE_CHECKING:
     from molmospaces_resources.remote_storage import RemoteStorage
 
-logger = logging.getLogger(__name__)
+logger = logging.getLogger("molmospaces_resources")
 
 
 def _download_and_extract(
@@ -40,9 +40,7 @@ def _download_and_extract(
     except KeyboardInterrupt:
         raise
     except Exception as exc:
-        logger.warning(
-            "Download/extract failure for %s: %s: %s", package, type(exc).__name__, exc
-        )
+        logger.warning("Download/extract failure for %s: %s: %s", package, type(exc).__name__, exc)
         return False
 
 
@@ -112,9 +110,7 @@ def _parallel_extract(
     for pkg in packages_to_size:
         q_in.put((pkg, relative_path, cache_dest, source, read_only))
 
-    num_workers = max(
-        min(max_workers, len(packages_to_size) // min_items_per_worker), 1
-    )
+    num_workers = max(min(max_workers, len(packages_to_size) // min_items_per_worker), 1)
     for _ in range(num_workers):
         q_in.put(None)  # sentinel
 

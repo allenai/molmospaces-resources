@@ -9,7 +9,7 @@ from pathlib import Path
 
 from filelock import FileLock
 
-logger = logging.getLogger(__name__)
+logger = logging.getLogger("molmospaces_resources")
 
 
 @contextlib.contextmanager

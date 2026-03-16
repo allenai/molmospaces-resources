@@ -10,7 +10,7 @@ from molmospaces_resources.constants import LOCAL_MANIFEST_NAME
 from molmospaces_resources.remote_storage import RemoteStorage
 from molmospaces_resources.manager import ResourceManager
 
-logger = logging.getLogger(__name__)
+logger = logging.getLogger("molmospaces_resources")
 
 _RESOURCE_MANAGERS: dict[str, ResourceManager] = {}
 _RESOURCE_MANAGERS_PID: int = os.getpid()

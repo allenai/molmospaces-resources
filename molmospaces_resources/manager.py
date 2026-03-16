@@ -79,7 +79,7 @@ from molmospaces_resources.lmdb_data import PickleLMDBMap
 from molmospaces_resources.threading_utils import _parallel_extract
 
 
-logger = logging.getLogger(__name__)
+logger = logging.getLogger("molmospaces_resources")
 
 
 class SourceInfo(TypedDict):
@@ -142,9 +142,7 @@ class ResourceManager:
         self.symlink_lock = symlink_lock
 
         self._defaults = data_type_defaults or DATA_TYPE_DEFAULTS
-        self._overrides = (
-            source_overrides if source_overrides is not None else SOURCE_OVERRIDES
-        )
+        self._overrides = source_overrides if source_overrides is not None else SOURCE_OVERRIDES
 
         # -- per-source caches (lazy, reset on fork) ---------------------------
         self._pid: int = os.getpid()
@@ -172,9 +170,7 @@ class ResourceManager:
         """Reset fork-unsafe caches (LMDB-backed tries, indices) after fork."""
         pid = os.getpid()
         if pid != self._pid:
-            logger.debug(
-                "Fork detected (pid %d -> %d), resetting caches", self._pid, pid
-            )
+            logger.debug("Fork detected (pid %d -> %d), resetting caches", self._pid, pid)
             self._pid = pid
             self._tries.clear()
             self._indices_built.clear()
@@ -297,9 +293,7 @@ class ResourceManager:
             # Fast path: ask the index for candidates
             candidates: Sequence[str] = ()
             if index is not None:
-                candidates = index.candidates(
-                    query, max_returns=self.max_priority_returns
-                )
+                candidates = index.candidates(query, max_returns=self.max_priority_returns)
 
             # Check candidates first, then fall back to full scan
             for arc in chain(candidates, trie_map.keys()):
@@ -338,9 +332,7 @@ class ResourceManager:
             self.cache_dir if self.cache_lock else None,
         ):
             cache_manifest = load_json_manifest(self.cache_dir / LOCAL_MANIFEST_NAME)
-            symlink_manifest = load_json_manifest(
-                self.symlink_dir / LOCAL_MANIFEST_NAME
-            )
+            symlink_manifest = load_json_manifest(self.symlink_dir / LOCAL_MANIFEST_NAME)
 
             for data_type, source_to_version in self.versions.items():
                 cache_manifest.setdefault(data_type, {})
@@ -351,9 +343,7 @@ class ResourceManager:
                     symlink_manifest[data_type].setdefault(source, None)
 
                     if symlink_manifest[data_type][source] == version:
-                        logger.debug(
-                            "Already installed: %s/%s %s", data_type, source, version
-                        )
+                        logger.debug("Already installed: %s/%s %s", data_type, source, version)
                         continue
 
                     self._setup_source(
@@ -364,12 +354,8 @@ class ResourceManager:
                         symlink_manifest,
                     )
 
-                    save_json_manifest(
-                        self.cache_dir / LOCAL_MANIFEST_NAME, cache_manifest
-                    )
-                    save_json_manifest(
-                        self.symlink_dir / LOCAL_MANIFEST_NAME, symlink_manifest
-                    )
+                    save_json_manifest(self.cache_dir / LOCAL_MANIFEST_NAME, cache_manifest)
+                    save_json_manifest(self.symlink_dir / LOCAL_MANIFEST_NAME, symlink_manifest)
 
     def _setup_source(
         self,
@@ -388,9 +374,7 @@ class ResourceManager:
         logger.debug("Setting up %s/%s version=%s", data_type, source, version)
 
         # -- handle version mismatch at symlink location ----------------------
-        self._handle_version_mismatch(
-            inst, data_type, source, version, symlink_manifest
-        )
+        self._handle_version_mismatch(inst, data_type, source, version, symlink_manifest)
 
         # -- ensure cache is populated ----------------------------------------
         must_download = version not in cache_manifest[data_type][source]
@@ -418,9 +402,7 @@ class ResourceManager:
         # -- extract archives (or skip for on-demand) -------------------------
         if must_download:
             if beh.install_mode is InstallMode.EAGER:
-                logger.debug(
-                    "Extracting %.1f MB to cache...", sum(remote_manifest.values())
-                )
+                logger.debug("Extracting %.1f MB to cache...", sum(remote_manifest.values()))
                 failed = _parallel_extract(
                     remote_manifest,
                     rel,
@@ -499,9 +481,7 @@ class ResourceManager:
                         if trie is not None and all(
                             (cache_dest / p).exists() for p in trie.leaf_paths()
                         ):
-                            _complete_extract_flag(pkg, cache_dest).touch(
-                                exist_ok=False
-                            )
+                            _complete_extract_flag(pkg, cache_dest).touch(exist_ok=False)
                             continue
                         to_download[pkg] = remote_manifest[pkg]
 
@@ -533,9 +513,7 @@ class ResourceManager:
                     if trie is not None:
                         self._ensure_package_linked(inst, pkg, trie, rel)
 
-    def install_all_for_source(
-        self, data_type: str, source: str, **kwargs: Any
-    ) -> None:
+    def install_all_for_source(self, data_type: str, source: str, **kwargs: Any) -> None:
         """Install every known package for a source."""
         pkgs = list(self.tries(data_type, source).keys())
         if pkgs:
@@ -594,9 +572,7 @@ class ResourceManager:
 
         return {
             "root_dir": root,
-            "archive_to_relative_paths": {
-                arc: collect(trie) for arc, trie in trie_map.items()
-            },
+            "archive_to_relative_paths": {arc: collect(trie) for arc, trie in trie_map.items()},
         }
 
     # ---- internal: symlink creation -----------------------------------------
@@ -739,6 +715,4 @@ class ResourceManager:
                 if dt not in manifest or src not in manifest[dt]:
                     missing.setdefault(dt, {})[src] = ver
         if missing:
-            raise ValueError(
-                f"Cache is missing sources:\n{json.dumps(missing, indent=2)}"
-            )
+            raise ValueError(f"Cache is missing sources:\n{json.dumps(missing, indent=2)}")
