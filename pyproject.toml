@@ -1,0 +1,21 @@
+[project]
+name = "molmospaces_resources"
+version = "0.0.1"
+description = "Resource manager for MolmoSpaces"
+readme = "README.md"
+license = "Apache-2.0"
+authors = [{name = "Allen Institute for AI (Ai2)"}]
+requires-python = ">=3.10"
+dependencies = [
+    "datasets",
+    "filelock",
+    "huggingface_hub",
+    "lmdb~=1.7.5",
+    "requests",
+    "tqdm>=4.65.0",
+    "zstandard~=0.25.0",
+]
+
+[build-system]
+requires = ["setuptools"]
+build-backend = "setuptools.build_meta"
