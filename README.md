@@ -15,12 +15,13 @@ pip install molmospaces-resources
 
 ## Setup example
 
-Data is served from a Hugging Face dataset repo:
+Data is by default served from a gated Hugging Face dataset repo, so we need to pass a valid token:
 
 ```python
+import os
 from molmospaces_resources import HFRemoteStorage, setup_resource_manager
 
-source = HFRemoteStorage("allenai/molmospaces", repo_prefix="mujoco")
+source = HFRemoteStorage("allenai/molmospaces", repo_prefix="mujoco", token=os.environ["HF_TOKEN"])
 mgr = setup_resource_manager(
   source,
   symlink_dir=SYMLINK_DIR,
