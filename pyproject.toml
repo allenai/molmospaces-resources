@@ -1,6 +1,6 @@
 [project]
 name = "molmospaces_resources"
-version = "0.0.1-beta"
+version = "0.0.1b1"
 description = "Resource manager for MolmoSpaces"
 readme = "README.md"
 license = "Apache-2.0"
@@ -19,3 +19,6 @@ dependencies = [
 [build-system]
 requires = ["setuptools"]
 build-backend = "setuptools.build_meta"
+
+[project.urls]
+Repository = "https://github.com/allenai/molmospaces-resources"
