@@ -1,7 +1,8 @@
 [project]
 name = "molmospaces_resources"
-version = "0.0.1-beta"
+version = "0.0.1b1"
 description = "Resource manager for MolmoSpaces"
+url="https://github.com/allenai/molmospaces-resources"
 readme = "README.md"
 license = "Apache-2.0"
 authors = [{name = "Allen Institute for AI (Ai2)"}]
