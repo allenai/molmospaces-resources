@@ -1,6 +1,6 @@
 [project]
 name = "molmospaces_resources"
-version = "0.0.1"
+version = "0.0.1-beta"
 description = "Resource manager for MolmoSpaces"
 readme = "README.md"
 license = "Apache-2.0"
