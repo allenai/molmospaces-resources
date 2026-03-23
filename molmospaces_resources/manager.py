@@ -350,7 +350,21 @@ class ResourceManager:
                     cache_manifest[data_type].setdefault(source, [])
                     symlink_manifest[data_type].setdefault(source, None)
 
-                    if symlink_manifest[data_type][source] == version:
+                    cache_tries_path = (
+                        self.symlink_dir / data_type / source / COMBINED_TRIES_NAME
+                    ).resolve()
+
+                    cache_manifest_path = (
+                        self.symlink_dir / data_type / source / REMOTE_MANIFEST_NAME
+                    ).resolve()
+
+                    if (
+                        cache_tries_path.is_file()
+                        and cache_manifest_path.is_file()
+                        and cache_tries_path.parent == cache_manifest_path.parent
+                        and cache_tries_path.parent.name == version
+                        and symlink_manifest[data_type][source] == version
+                    ):
                         logger.debug(
                             "Already installed: %s/%s %s", data_type, source, version
                         )
@@ -739,11 +753,13 @@ class ResourceManager:
             raise ValueError(f"Missing cache manifest: {manifest_path}")
         with open(manifest_path) as f:
             manifest = json.load(f)
+
         missing: dict[str, dict[str, str]] = {}
         for dt, sv in self.versions.items():
             for src, ver in sv.items():
                 if dt not in manifest or src not in manifest[dt]:
                     missing.setdefault(dt, {})[src] = ver
+
         if missing:
             raise ValueError(
                 f"Cache is missing sources:\n{json.dumps(missing, indent=2)}"
