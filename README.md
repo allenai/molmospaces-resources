@@ -83,6 +83,10 @@ logging.getLogger("molmospaces_resources").setLevel(logging.DEBUG)
 
 ## FAQ
 
+**FAQ 0\. I'm getting hard to parse errors when using the ResourceManager and I cannot resolve the issue by just erasing the involved subdirectories and the corresponding entries in the installed data manifests (`mjthor_data_type_to_source_to_versions.json`) under both install and cache dirs.**
+
+Chances are it might be easiest to just fully erase both cache and symlink dirs (see the differences between both below) and then start populating new cache and symlink dirs by just setting up the resource manager with the desired data sources and versions (e.g. as described above). Note that some data sources, like thor objects or robots, will get fully extracted during the initial setup, which takes longer than usual to complete.
+
 **FAQ 1\. What is the difference between `cache_dir` and `symlink_dir`?**
 
 The resource manager uses two separate directory trees that must not overlap:
