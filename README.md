@@ -1,4 +1,4 @@
-# <img src=https://avatars.githubusercontent.com/u/5667695 width=25> MolmoSpaces-resources
+# <img src=molmospaces_resources/images/ai2_logo.png width=22> MolmoSpaces-resources
 
 Resource manager for [MolmoSpaces](https://github.com/allenai/molmospaces). Downloads, caches, and symlinks versioned data archives from remote buckets.
 
