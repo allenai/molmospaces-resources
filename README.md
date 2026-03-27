@@ -15,7 +15,7 @@ pip install molmospaces-resources
 
 ## Setup example
 
-Data is by default served from a gated Hugging Face dataset repo, so we need to pass a valid token:
+Data is assumed to be served from a gated Hugging Face dataset repo, so we typically need to pass a valid token:
 
 ```python
 import os
@@ -30,7 +30,7 @@ mgr = setup_resource_manager(
 )
 ```
 
-**Legacy.** Alternatively, you can use the R2 remote storage for direct bucket access:
+Alternatively, we can use the R2 remote storage for direct bucket access:
 
 ```python
 from molmospaces_resources import R2RemoteStorage, setup_resource_manager
@@ -78,7 +78,10 @@ or set the `molmospaces_resources` logger level explicitly:
 
 ```python
 import logging
-logging.getLogger("molmospaces_resources").setLevel(logging.DEBUG)
+logger = logging.getLogger("molmospaces_resources")
+logger.setLevel(logging.DEBUG)
+if not logger.handlers:
+    logger.addHandler(logging.StreamHandler())
 ```
 
 ## FAQ
