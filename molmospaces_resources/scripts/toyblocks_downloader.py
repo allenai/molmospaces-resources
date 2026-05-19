@@ -73,7 +73,7 @@ class DownloadArgs:
     hf_token: str | None = None
 
     # Use R2 remote storage (HuggingFace by default)
-    use_r2: bool = False
+    use_r2: bool = True
 
     # Override VERSION 
     version: str = None
