@@ -338,6 +338,7 @@ class ResourceManager:
             self.cache_dir if self.cache_lock else None,
         ):
             cache_manifest = load_json_manifest(self.cache_dir / LOCAL_MANIFEST_NAME)
+            print(f"----- symlink_manifest: {self.symlink_dir / LOCAL_MANIFEST_NAME}")
             symlink_manifest = load_json_manifest(
                 self.symlink_dir / LOCAL_MANIFEST_NAME
             )
