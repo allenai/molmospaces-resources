@@ -18,7 +18,7 @@ logger.setLevel(logging.DEBUG)
 if not logger.handlers:
     logger.addHandler(logging.StreamHandler())
 
-DEFAULT_CACHE_DIR = Path.home() / ".molmospaces"
+DEFAULT_CACHE_DIR = Path.home() / ".toyblocks"
 VERSION = "20260518"
 SOURCE_TO_VERSION = {
     "objects": {
