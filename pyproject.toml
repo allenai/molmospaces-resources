@@ -1,6 +1,6 @@
 [project]
 name = "molmospaces_resources"
-version = "0.0.1b4"
+version = "0.0.1b5"
 description = "Resource manager for MolmoSpaces"
 readme = "README.md"
 license = "Apache-2.0"
@@ -13,8 +13,14 @@ dependencies = [
     "lmdb~=1.7.5",
     "requests",
     "tqdm>=4.65.0",
+    "tyro",
     "zstandard~=0.25.0",
 ]
+
+[project.scripts]
+get-toyblocks-assets = "molmospaces_resources.scripts.toyblocks_downloader:main"
+get-toyblocks-assets-usd = "molmospaces_resources.scripts.toyblocks_downloader:usd_default"
+get-toyblocks-assets-mjcf = "molmospaces_resources.scripts.toyblocks_downloader:mjcf_default"
 
 [build-system]
 requires = ["setuptools"]
