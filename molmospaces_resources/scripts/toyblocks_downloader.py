@@ -78,7 +78,6 @@ class DownloadArgs:
     # Override VERSION 
     version: str = None
 
-
 def main() -> int:
     args = tyro.cli(DownloadArgs)
 
