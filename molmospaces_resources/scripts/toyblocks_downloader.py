@@ -1,6 +1,7 @@
 import logging
 import os
 from dataclasses import dataclass, field
+import json
 from pathlib import Path
 from typing import Literal
 import sys
@@ -40,6 +41,11 @@ SOURCE_TO_VERSION = {
            "usd": VERSION,
            "mjcf": VERSION
         }
+    },
+    "scenes": {
+        "toyblocks_real": {
+            "usd": "20260521"
+        }
     }
 }
 
@@ -60,7 +66,7 @@ class DownloadArgs:
     type: Literal["mjcf", "usd"]
 
     # Path to symlink extracted data from the cache_dir
-    install_dir: Path
+    install_dir: Path = Path("./assets")
 
     assets: list[Literal["train_blocks", "train_blocks_legacy_match", "robot_workstation"]] = field(default_factory=list)
 
@@ -69,14 +75,17 @@ class DownloadArgs:
     # Path to extract (versioned) downloaded data
     cache_dir: Path = DEFAULT_CACHE_DIR
 
+    # Override VERSION in this scrip's resource tree
+    version: str = None
+
+    # Path to the asset manifest a json file that will override source to version and version flag
+    asset_manifest: str = None
+
     # If not provided, uses HF_TOKEN from environment
     hf_token: str | None = None
 
     # Use R2 remote storage (HuggingFace by default)
     use_r2: bool = True
-
-    # Override VERSION 
-    version: str = None
 
 def main() -> int:
     args = tyro.cli(DownloadArgs)
@@ -90,10 +99,25 @@ def main() -> int:
     logger.info(f"Symlinking from directory '{args.install_dir}'")
     logger.info(f"Downloading '{args.type}' version of the assets")
 
-    sources_to_version = dict(objects=dict(), robots=dict())
+    sources_to_version = dict(objects=dict(), robots=dict(), scenes=dict())
 
-    for (data_type, source_map) in SOURCE_TO_VERSION.items():
-        sources_to_version[data_type] = { f"{source}/{args.type}":(args.version if args.version else type_map[args.type]) for (source, type_map) in source_map.items()}
+    fallback_to_script_manifest = True
+    if args.asset_manifest:
+        try:
+            with open(args.asset_manifest, "r") as f:
+                manifest_object = json.load(f)
+                for (data_type, source_map) in manifest_object.items():
+                    sources_to_version[data_type] = { f"{source}/{args.type}":version for (source, version) in source_map.items()}
+                fallback_to_script_manifest = False
+        except FileNotFoundError as e:
+            logger.warning(f"Manifest file '{args.asset_manifest}' not found, make sure it's in path provided or use absolute path.")
+        except e:
+            sample_manifest = {'resource_type': {'source': {'version_string'}}}
+            logger.warning(f"Invalid manifest file '{args.asset_manifest}' make sure the structure is: {sample_manifest}")
+    
+    if not args.asset_manifest or fallback_to_script_manifest:
+        for (data_type, source_map) in SOURCE_TO_VERSION.items():
+            sources_to_version[data_type] = { f"{source}/{args.type}":(args.version if args.version else type_map[args.type]) for (source, type_map) in source_map.items()}
 
     print(sources_to_version)
 
@@ -113,6 +137,9 @@ def main() -> int:
             "objects": SourceBehavior(
                 LinkStrategy.GLOBAL, InstallMode.EAGER
             ),
+            "scenes": SourceBehavior(
+                LinkStrategy.GLOBAL, InstallMode.EAGER
+            ),
         },
         force_install=True,
     )
@@ -123,6 +150,9 @@ def main() -> int:
 
     logger.info("Installing robots...")
     manager.install_all_for_data_type("robots", skip_linking=False)
+
+    logger.info("Installing scenes...")
+    manager.install_all_for_data_type("scenes", skip_linking=False)
 
     return 0
 
