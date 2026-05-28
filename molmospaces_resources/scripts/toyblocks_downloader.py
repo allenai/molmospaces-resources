@@ -76,16 +76,19 @@ class DownloadArgs:
     cache_dir: Path = DEFAULT_CACHE_DIR
 
     # Override VERSION in this scrip's resource tree
-    version: str = None
+    version: str | None = None
 
     # Path to the asset manifest a json file that will override source to version and version flag
-    asset_manifest: str = None
+    asset_manifest: str | None = None
 
     # If not provided, uses HF_TOKEN from environment
     hf_token: str | None = None
 
     # Use R2 remote storage (HuggingFace by default)
     use_r2: bool = True
+
+    # When you want to download a version but not replace your symlink to it, pass True
+    skip_symlink: bool = False
 
 def main() -> int:
     args = tyro.cli(DownloadArgs)
@@ -111,9 +114,10 @@ def main() -> int:
                 fallback_to_script_manifest = False
         except FileNotFoundError as e:
             logger.warning(f"Manifest file '{args.asset_manifest}' not found, make sure it's in path provided or use absolute path.")
-        except e:
+        except Exception as e:
             sample_manifest = {'resource_type': {'source': {'version_string'}}}
-            logger.warning(f"Invalid manifest file '{args.asset_manifest}' make sure the structure is: {sample_manifest}")
+            logger.error(f"Invalid manifest file '{args.asset_manifest}' make sure the structure is: {sample_manifest}")
+            exit(1)
     
     if not args.asset_manifest or fallback_to_script_manifest:
         for (data_type, source_map) in SOURCE_TO_VERSION.items():
@@ -145,14 +149,9 @@ def main() -> int:
     )
     manager.setup()
 
-    logger.info("Installing objects...")
-    manager.install_all_for_data_type("objects", skip_linking=False)
-
-    logger.info("Installing robots...")
-    manager.install_all_for_data_type("robots", skip_linking=False)
-
-    logger.info("Installing scenes...")
-    manager.install_all_for_data_type("scenes", skip_linking=False)
+    for data_type, source_dict in sources_to_version.items():
+        logger.info(f"Installing {data_type}...")
+        manager.install_all_for_data_type(data_type, skip_linking=args.skip_symlink)
 
     return 0
 
