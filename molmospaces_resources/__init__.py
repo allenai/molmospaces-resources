@@ -5,6 +5,7 @@ from molmospaces_resources.remote_storage import (
     RemoteStorage,
     R2RemoteStorage,
     HFRemoteStorage,
+    GCRemoteStorage,
 )
 from molmospaces_resources.lmdb_data import GenericLMDBMap, JSonLMDBMap, PickleLMDBMap
 from molmospaces_resources.constants import LOCAL_MANIFEST_NAME, COMBINED_TRIES_NAME

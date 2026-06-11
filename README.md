@@ -30,7 +30,7 @@ mgr = setup_resource_manager(
 )
 ```
 
-Alternatively, we can use the R2 remote storage for direct bucket access:
+Alternatively, we can use `R2RemoteStorage` for direct bucket access, including `"mujoco-thor-resources"`, `"isaac-thor-resources"`, and `"mujoco-thor-training-data"` (also available for Google Cloud Storage via `GCRemoteStorage` with `"molmospaces-isaac"`, `"molmospaces-mujoco"`, and `"molmobot-data"` buckets):
 
 ```python
 from molmospaces_resources import R2RemoteStorage, setup_resource_manager
