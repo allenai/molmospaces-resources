@@ -2,18 +2,13 @@ name: Release
 
 on:
   push:
-    branches:
-    - main
+    tags:
+    - "^[0-9]+.[0-9]+.[a-zA-Z0-9]+$"
 jobs:
   deploy:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v3
-    - uses: actions-ecosystem/action-regex-match@v2
-      id: regex-match
-      with:
-        text: ${{ github.event.head_commit.message }}
-        regex: '^Release ([^ ]+)'
     - name: Set up Python
       uses: actions/setup-python@v3
       with:
@@ -23,12 +18,8 @@ jobs:
         python -m pip install --upgrade pip
         pip install build twine
     - name: Release
-      if: ${{ steps.regex-match.outputs.match != '' }}
       uses: softprops/action-gh-release@v1
-      with:
-        tag_name: ${{ steps.regex-match.outputs.group1 }}
     - name: Build and publish
-      if: ${{ steps.regex-match.outputs.match != '' }}
       env:
         TWINE_USERNAME: __token__
         TWINE_PASSWORD: ${{ secrets.TWINE_TOKEN }}

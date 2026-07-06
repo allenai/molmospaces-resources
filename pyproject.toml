@@ -22,6 +22,8 @@ get-toyblocks-assets = "molmospaces_resources.scripts.toyblocks_downloader:main"
 get-toyblocks-assets-usd = "molmospaces_resources.scripts.toyblocks_downloader:usd_default"
 get-toyblocks-assets-mjcf = "molmospaces_resources.scripts.toyblocks_downloader:mjcf_default"
 
+get-molmospaces-assets = "molmospaces_resources.scripts.molmospaces_downloader:main"
+
 [build-system]
 requires = ["setuptools"]
 build-backend = "setuptools.build_meta"
