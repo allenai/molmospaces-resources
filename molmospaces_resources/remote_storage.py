@@ -44,7 +44,7 @@ class R2RemoteStorage(RemoteStorage):
         "mujoco-thor-resources": "https://pub-3555e9bb2d304fab9c6c79819e48aa40.r2.dev",
         "isaac-thor-resources": "https://pub-96496c3574b24d0c98b235219711d359.r2.dev",
         "mujoco-thor-training-data": "https://pub-8835d6d5740d4643905321ed0a7f6ecb.r2.dev",
-        # "toyblocks-resources": "https://pub-503fa7299cc041f8948a88c0738e9fcb.r2.dev",
+        "toyblocks-resources": "https://pub-503fa7299cc041f8948a88c0738e9fcb.r2.dev",
     }
 
     def __init__(self, base_url: str) -> None:
