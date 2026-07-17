@@ -80,6 +80,7 @@ class GCRemoteStorage(R2RemoteStorage):
         "molmospaces-isaac": "https://storage.googleapis.com/molmospaces-isaac",
         "molmospaces-mujoco": "https://storage.googleapis.com/molmospaces-mujoco",
         "molmobot-data": "https://storage.googleapis.com/molmobot-data",
+        "toyblocks-resources": "https://storage.googleapis.com/toyblocks-resources",
     }
 
 
@@ -132,9 +133,7 @@ class HFRemoteStorage(RemoteStorage):
         return headers
 
     def _file_url(self, path_in_repo: str) -> str:
-        return (
-            f"https://huggingface.co/datasets/{self.repo_id}/resolve/{self.revision}/{path_in_repo}"
-        )
+        return f"https://huggingface.co/datasets/{self.repo_id}/resolve/{self.revision}/{path_in_repo}"
 
     def _load_index(self, relative_path: Path) -> dict[str, Any]:
         """Load (and disk-cache) the shard index for *relative_path*.
@@ -149,7 +148,9 @@ class HFRemoteStorage(RemoteStorage):
         key = relative_path.as_posix()
         if key not in self._index_cache:
             config = self._config_name(relative_path)
-            logger.debug("Loading HF shard index: repo=%s config=%s", self.repo_id, config)
+            logger.debug(
+                "Loading HF shard index: repo=%s config=%s", self.repo_id, config
+            )
             ds = load_dataset(
                 self.repo_id,
                 name=config,
