@@ -30,27 +30,17 @@ SOURCE_TO_VERSION = {
     "scenes": {"toyblocks_real": {"usd": "20260521"}},
 }
 
-STORAGE_TO_TYPE_TO_URL: dict[str, dict[str, str]] = {
-    "r2": {
-        "mjcf": "https://pub-68edf05dda9641c199fbab7951b156b4.r2.dev",
-        "usd": "https://pub-7509f9a77f9742c8b936076bfc11ef68.r2.dev",
-    },
-    "gc": {
-        "mjcf": "https://storage.googleapis.com/toyblocks-resources-mjcf",
-        "usd": "https://storage.googleapis.com/toyblocks-resources-usd",
-    },
-}
-
 TYPE_TO_PREFIX: dict[str, str] = {
     "mjcf": "mujoco",
     "usd": "isaac",
+    "auto": ""
 }
 
 
 @dataclass
 class DownloadArgs:
-    # `mjcf` for MuJoCo or ManiSkill, `usd` for Isaac
-    type: Literal["mjcf", "usd"]
+    # `mjcf` for MuJoCo or ManiSkill, `usd` for Isaac, "auto" asset manifest is specific
+    type: Literal["mjcf", "usd", "auto"] = "auto"
 
     # Path to symlink extracted data from the cache_dir
     install_dir: Path = Path("./assets")
@@ -73,8 +63,8 @@ class DownloadArgs:
     # If not provided, uses HF_TOKEN from environment
     hf_token: str | None = None
 
-    # Storage to use (Google Cloud by default)
-    storage: list[Literal["r2", "gc"]] = field(default_factory=lambda: "gc")
+    # Storage to use (R2 by default)
+    storage: Literal["r2", "gc"] = "r2"
 
     # When you want to download a version but not replace your symlink to it, pass True
     skip_symlink: bool = False
@@ -87,7 +77,6 @@ def main() -> int:
 
     assert (
         args.type in TYPE_TO_PREFIX
-        and args.type in STORAGE_TO_TYPE_TO_URL[args.storage]
     ), (
         f"Something went wrong, must only use {set(TYPE_TO_PREFIX.keys())}, but got '{args.type}'"
     )
@@ -98,15 +87,33 @@ def main() -> int:
     sources_to_version = dict(objects=dict(), robots=dict(), scenes=dict())
 
     fallback_to_script_manifest = True
+    manifest_object = None
     if args.asset_manifest:
         try:
+            
             with open(args.asset_manifest, "r") as f:
                 manifest_object = json.load(f)
                 for data_type, source_map in manifest_object.items():
-                    sources_to_version[data_type] = {
-                        f"{source}/{args.type}": version
-                        for (source, version) in source_map.items()
-                    }
+                    if args.type != "auto":
+                        sources_to_version[data_type] = {
+                            f"{source}/{args.type}": version
+                            for (source, version) in source_map.items()
+                        }
+                    else:
+                        # auto mode, expects asset manifest to have which asset version it wants
+                        # allows for non-type assets like environments, which are neither usd, nor mjcf
+                        r = {}
+                        for (source, content) in source_map.items():
+                            if isinstance(content, dict):
+                                m = { f"{source}/{type}": version
+                                        for (type, version) in content.items()}
+                                r.update(m)
+                            elif isinstance(content, str):
+                                r.update({
+                                    f"{source}": content
+                                })
+                        sources_to_version[data_type] = r
+                            
                 fallback_to_script_manifest = False
         except FileNotFoundError as e:
             logger.warning(
@@ -135,16 +142,23 @@ def main() -> int:
     else:
         remote_storage = GCRemoteStorage(f"toyblocks-resources")
 
+    data_type_defaults = {
+        "robots": SourceBehavior(LinkStrategy.PER_FILE, InstallMode.EAGER),
+        "objects": SourceBehavior(LinkStrategy.GLOBAL, InstallMode.EAGER),
+        "scenes": SourceBehavior(LinkStrategy.GLOBAL, InstallMode.EAGER),
+        # "environments": SourceBehavior(LinkStrategy.GLOBAL, InstallMode.EAGER),
+    }
+    if manifest_object is not None:
+        for data_type, _ in  manifest_object.items():
+            if data_type not in data_type_defaults:
+                data_type_defaults[data_type] = SourceBehavior(LinkStrategy.GLOBAL, InstallMode.EAGER)
+
     manager = ResourceManager(
         remote_storage=remote_storage,
         data_type_to_source_to_version=sources_to_version,
         symlink_dir=args.install_dir,
         cache_dir=args.cache_dir,
-        data_type_defaults={
-            "robots": SourceBehavior(LinkStrategy.PER_FILE, InstallMode.EAGER),
-            "objects": SourceBehavior(LinkStrategy.GLOBAL, InstallMode.EAGER),
-            "scenes": SourceBehavior(LinkStrategy.GLOBAL, InstallMode.EAGER),
-        },
+        data_type_defaults=data_type_defaults,
         force_install=True,
     )
     manager.setup()
@@ -160,7 +174,7 @@ def usd_default():
     sys.argv = [
         sys.argv[0],
         "--storage",
-        "gc",
+        "r2",
         "--type",
         "usd",
         "--install-dir",
@@ -174,9 +188,22 @@ def mjcf_default():
     sys.argv = [
         sys.argv[0],
         "--storage",
-        "gc",
+        "r2",
         "--type",
         "mjcf",
+        "--install-dir",
+        "assets",
+        *sys.argv[1:],
+    ]
+    main()
+
+def auto_default():
+    sys.argv = [
+        sys.argv[0],
+        "--storage",
+        "r2",
+        "--type",
+        "auto",
         "--install-dir",
         "assets",
         *sys.argv[1:],

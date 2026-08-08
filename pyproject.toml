@@ -18,7 +18,7 @@ dependencies = [
 ]
 
 [project.scripts]
-get-toyblocks-assets = "molmospaces_resources.scripts.toyblocks_downloader:main"
+get-toyblocks-assets = "molmospaces_resources.scripts.toyblocks_downloader:auto_default"
 get-toyblocks-assets-usd = "molmospaces_resources.scripts.toyblocks_downloader:usd_default"
 get-toyblocks-assets-mjcf = "molmospaces_resources.scripts.toyblocks_downloader:mjcf_default"
 
