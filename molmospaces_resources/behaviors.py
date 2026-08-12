@@ -84,6 +84,10 @@ SOURCE_OVERRIDES: dict[tuple[str, str], dict[str, Any]] = {
     ("objects", "objathor_metadata"): {"install_mode": InstallMode.EAGER},
     ("grasps", "droid"): {"install_mode": InstallMode.EAGER},
     ("grasps", "rum"): {"install_mode": InstallMode.EAGER},
+    ("robots", "humans_rocketbox"): {
+        "install_mode": InstallMode.ON_DEMAND,
+        "archive_index": SubstringIndex,
+    },
 }
 
 
