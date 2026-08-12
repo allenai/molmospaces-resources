@@ -1,6 +1,6 @@
 [project]
 name = "molmospaces_resources"
-version = "0.0.2"
+dynamic = ["version"]
 description = "Resource manager for MolmoSpaces"
 readme = "README.md"
 license = "Apache-2.0"
@@ -25,8 +25,10 @@ get-toyblocks-assets-mjcf = "molmospaces_resources.scripts.toyblocks_downloader:
 get-molmospaces-assets = "molmospaces_resources.scripts.molmospaces_downloader:main"
 
 [build-system]
-requires = ["setuptools"]
+requires = ["setuptools", "setuptools-scm"]
 build-backend = "setuptools.build_meta"
+
+[tool.setuptools_scm]
 
 [project.urls]
 Repository = "https://github.com/allenai/molmospaces-resources"
