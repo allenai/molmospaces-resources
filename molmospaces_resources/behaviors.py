@@ -5,7 +5,11 @@ from dataclasses import dataclass
 from enum import Enum
 from typing import Any
 
-from molmospaces_resources.indexing import ArchiveIndex, NumericIndex, SubstringIndex
+from molmospaces_resources.indexing import (
+    ArchiveIndex,
+    NumericIndex,
+    SubstringIndex,
+)
 
 
 class LinkStrategy(Enum):
@@ -77,6 +81,12 @@ DATA_TYPE_DEFAULTS: dict[str, SourceBehavior] = {
     "franka-rby1-training-data": SourceBehavior(
         LinkStrategy.GLOBAL, InstallMode.ON_DEMAND, NumericIndex
     ),
+    "textures": SourceBehavior(LinkStrategy.GLOBAL, InstallMode.EAGER),
+}
+
+HUMAN_ROCKET_BOX_OVERRIDES = {
+    "install_mode": InstallMode.ON_DEMAND,
+    "archive_index": SubstringIndex,
 }
 
 SOURCE_OVERRIDES: dict[tuple[str, str], dict[str, Any]] = {
@@ -84,10 +94,11 @@ SOURCE_OVERRIDES: dict[tuple[str, str], dict[str, Any]] = {
     ("objects", "objathor_metadata"): {"install_mode": InstallMode.EAGER},
     ("grasps", "droid"): {"install_mode": InstallMode.EAGER},
     ("grasps", "rum"): {"install_mode": InstallMode.EAGER},
-    ("robots", "humans_rocketbox"): {
-        "install_mode": InstallMode.ON_DEMAND,
-        "archive_index": SubstringIndex,
-    },
+    ("scenes", "rlbench"): {"archive_index": None},
+    ("robots", "humans_rocketbox"): {**HUMAN_ROCKET_BOX_OVERRIDES},
+    ("robots", "humans_rocketbox_articulated"): {**HUMAN_ROCKET_BOX_OVERRIDES},
+    ("robots", "humans_rocketbox_skinned"): {**HUMAN_ROCKET_BOX_OVERRIDES},
+    ("robots", "humans_rocketbox_static"): {**HUMAN_ROCKET_BOX_OVERRIDES},
 }
 
 
