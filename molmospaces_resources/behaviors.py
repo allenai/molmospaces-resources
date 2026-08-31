@@ -67,9 +67,7 @@ class SourceBehavior:
 
 DATA_TYPE_DEFAULTS: dict[str, SourceBehavior] = {
     "robots": SourceBehavior(LinkStrategy.PER_FILE, InstallMode.EAGER),
-    "scenes": SourceBehavior(
-        LinkStrategy.PER_FILE, InstallMode.ON_DEMAND, NumericIndex
-    ),
+    "scenes": SourceBehavior(LinkStrategy.PER_FILE, InstallMode.EAGER),
     "objects": SourceBehavior(
         LinkStrategy.GLOBAL, InstallMode.ON_DEMAND, SubstringIndex
     ),
@@ -94,12 +92,27 @@ SOURCE_OVERRIDES: dict[tuple[str, str], dict[str, Any]] = {
     ("objects", "objathor_metadata"): {"install_mode": InstallMode.EAGER},
     ("grasps", "droid"): {"install_mode": InstallMode.EAGER},
     ("grasps", "rum"): {"install_mode": InstallMode.EAGER},
-    ("scenes", "rlbench"): {"archive_index": None},
+    ("scenes", "rlbench"): {"install_mode": InstallMode.ON_DEMAND},
     ("robots", "humans_rocketbox"): {**HUMAN_ROCKET_BOX_OVERRIDES},
     ("robots", "humans_rocketbox_articulated"): {**HUMAN_ROCKET_BOX_OVERRIDES},
     ("robots", "humans_rocketbox_skinned"): {**HUMAN_ROCKET_BOX_OVERRIDES},
     ("robots", "humans_rocketbox_static"): {**HUMAN_ROCKET_BOX_OVERRIDES},
 }
+
+for scene_source in [
+    "ithor",
+    "procthor-10k-train",
+    "procthor-10k-val",
+    "procthor-10k-test",
+    "holodeck-objaverse-train",
+    "holodeck-objaverse-val",
+    "procthor-objaverse-train",
+    "procthor-objaverse-val",
+]:
+    SOURCE_OVERRIDES[("scenes", scene_source)] = {
+        "install_mode": InstallMode.ON_DEMAND,
+        "archive_index": NumericIndex,
+    }
 
 
 def _resolve_behavior(
