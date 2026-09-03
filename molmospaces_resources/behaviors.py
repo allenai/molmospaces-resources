@@ -70,9 +70,7 @@ DATA_TYPE_DEFAULTS: dict[str, SourceBehavior] = {
     "scenes": SourceBehavior(
         LinkStrategy.PER_FILE, InstallMode.ON_DEMAND, NumericIndex
     ),
-    "objects": SourceBehavior(
-        LinkStrategy.GLOBAL, InstallMode.ON_DEMAND, SubstringIndex
-    ),
+    "objects": SourceBehavior(LinkStrategy.GLOBAL, InstallMode.EAGER, SubstringIndex),
     "grasps": SourceBehavior(
         LinkStrategy.GLOBAL, InstallMode.ON_DEMAND, SubstringIndex
     ),
@@ -90,8 +88,7 @@ HUMAN_ROCKET_BOX_OVERRIDES = {
 }
 
 SOURCE_OVERRIDES: dict[tuple[str, str], dict[str, Any]] = {
-    ("objects", "thor"): {"install_mode": InstallMode.EAGER},
-    ("objects", "objathor_metadata"): {"install_mode": InstallMode.EAGER},
+    ("objects", "objaverse"): {"install_mode": InstallMode.ON_DEMAND},
     ("grasps", "droid"): {"install_mode": InstallMode.EAGER},
     ("grasps", "rum"): {"install_mode": InstallMode.EAGER},
     ("scenes", "rlbench"): {"archive_index": None},
