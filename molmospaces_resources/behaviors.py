@@ -70,10 +70,8 @@ DATA_TYPE_DEFAULTS: dict[str, SourceBehavior] = {
     "scenes": SourceBehavior(
         LinkStrategy.PER_FILE, InstallMode.ON_DEMAND, NumericIndex
     ),
-    "objects": SourceBehavior(LinkStrategy.GLOBAL, InstallMode.EAGER, SubstringIndex),
-    "grasps": SourceBehavior(
-        LinkStrategy.GLOBAL, InstallMode.ON_DEMAND, SubstringIndex
-    ),
+    "objects": SourceBehavior(LinkStrategy.GLOBAL, InstallMode.EAGER),
+    "grasps": SourceBehavior(LinkStrategy.GLOBAL, InstallMode.EAGER),
     "test_data": SourceBehavior(LinkStrategy.GLOBAL, InstallMode.EAGER),
     "benchmarks": SourceBehavior(LinkStrategy.GLOBAL, InstallMode.EAGER),
     "franka-rby1-training-data": SourceBehavior(
@@ -82,20 +80,20 @@ DATA_TYPE_DEFAULTS: dict[str, SourceBehavior] = {
     "textures": SourceBehavior(LinkStrategy.GLOBAL, InstallMode.EAGER),
 }
 
-HUMAN_ROCKET_BOX_OVERRIDES = {
+ON_DEMAND_SUBSTRING = {
     "install_mode": InstallMode.ON_DEMAND,
     "archive_index": SubstringIndex,
 }
 
 SOURCE_OVERRIDES: dict[tuple[str, str], dict[str, Any]] = {
-    ("objects", "objaverse"): {"install_mode": InstallMode.ON_DEMAND},
-    ("grasps", "droid"): {"install_mode": InstallMode.EAGER},
-    ("grasps", "rum"): {"install_mode": InstallMode.EAGER},
+    ("objects", "objaverse"): {**ON_DEMAND_SUBSTRING},
+    ("grasps", "droid_ycb"): {**ON_DEMAND_SUBSTRING},
+    ("grasps", "drod_objaverse"): {**ON_DEMAND_SUBSTRING},
     ("scenes", "rlbench"): {"archive_index": None},
-    ("robots", "humans_rocketbox"): {**HUMAN_ROCKET_BOX_OVERRIDES},
-    ("robots", "humans_rocketbox_articulated"): {**HUMAN_ROCKET_BOX_OVERRIDES},
-    ("robots", "humans_rocketbox_skinned"): {**HUMAN_ROCKET_BOX_OVERRIDES},
-    ("robots", "humans_rocketbox_static"): {**HUMAN_ROCKET_BOX_OVERRIDES},
+    ("robots", "humans_rocketbox"): {**ON_DEMAND_SUBSTRING},
+    ("robots", "humans_rocketbox_articulated"): {**ON_DEMAND_SUBSTRING},
+    ("robots", "humans_rocketbox_skinned"): {**ON_DEMAND_SUBSTRING},
+    ("robots", "humans_rocketbox_static"): {**ON_DEMAND_SUBSTRING},
 }
 
 
